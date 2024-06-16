@@ -5,16 +5,16 @@ import PackageDescription
 import CompilerPluginSupport
 
 let package = Package(
-    name: "PublicInit",
+    name: "SwiftBok",
     platforms: [.macOS(.v12), .iOS(.v15), .tvOS(.v13), .watchOS(.v6), .macCatalyst(.v13)],
     products: [
         .library(
-            name: "PublicInit",
-            targets: ["PublicInit"]
+            name: "SwiftBok",
+            targets: ["SwiftBok"]
         ),
         .executable(
-            name: "PublicInitClient",
-            targets: ["PublicInitClient"]
+            name: "SwiftBokClient",
+            targets: ["SwiftBokClient"]
         ),
     ],
     dependencies: [
@@ -22,18 +22,18 @@ let package = Package(
     ],
     targets: [
         .macro(
-            name: "PublicInitMacros",
+            name: "SwiftBokMacros",
             dependencies: [
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
             ]
         ),
-        .target(name: "PublicInit", dependencies: ["PublicInitMacros"]),
-        .executableTarget(name: "PublicInitClient", dependencies: ["PublicInit"]),
+        .target(name: "SwiftBok", dependencies: ["SwiftBokMacros"]),
+        .executableTarget(name: "SwiftBokClient", dependencies: ["SwiftBok"]),
         .testTarget(
-            name: "PublicInitTests",
+            name: "SwiftBokTests",
             dependencies: [
-                "PublicInitMacros",
+                "SwiftBokMacros",
                 .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
             ]
         ),
