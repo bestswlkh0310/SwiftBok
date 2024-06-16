@@ -6,4 +6,4 @@ public struct Foo {
     var b: Bool
 }
 
-let f = Foo(a: 10, b: false)
+let f = Foo(b: false)

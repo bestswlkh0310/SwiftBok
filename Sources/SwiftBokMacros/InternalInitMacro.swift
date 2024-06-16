@@ -2,41 +2,39 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftDiagnostics
 
-private enum PublicInitError: String, Error, DiagnosticMessage {
-    var diagnosticID: MessageID { .init(domain: "PublicInitMacro", id: rawValue) }
+private enum InternalInitError: String, Error, DiagnosticMessage {
+    var diagnosticID: MessageID { .init(domain: "InternalInitMacro", id: rawValue) }
     var severity: DiagnosticSeverity { .error }
     var message: String {
         switch self {
-        case .notAStruct: return "@PublicInit can only be applied to structs"
-        case .notPublic: return "@PublicInit can only be applied to public structs"
+        case .notAStruct: return "@InternalInit can only be applied to structs"
         }
     }
     
     case notAStruct
-    case notPublic
 }
 
 private struct InferenceDiagnostic: DiagnosticMessage {
-    let diagnosticID = MessageID(domain: "PublicInitMacro", id: "inference")
+    let diagnosticID = MessageID(domain: "InternalInitMacro", id: "inference")
     let severity: DiagnosticSeverity = .error
-    let message: String = "@PublicInit requires stored properties provide explicit type annotations"
+    let message: String = "@InternalInit requires stored properties provide explicit type annotations"
 }
 
-public struct PublicInitMacro: MemberMacro {
+public struct InternalInitMacro: MemberMacro {
     
     public static func expansion<Declaration: DeclGroupSyntax, Context: MacroExpansionContext>(
         of node: AttributeSyntax,
         providingMembersOf declaration: Declaration,
         in context: Context
     ) throws -> [DeclSyntax] {
-        guard let structDecl = declaration.as(StructDeclSyntax.self) else { throw PublicInitError.notAStruct }
-        guard structDecl.accessLevel == .public else { throw PublicInitError.notPublic }
+        guard let structDecl = declaration.as(StructDeclSyntax.self) else { throw InternalInitError.notAStruct }
         
         var included: [VariableDeclSyntax] = []
         
         for property in structDecl.storedProperties {
             guard !property.isStatic else { continue }
             guard property.bindingSpecifier.text == "var" || property.initializerValue == nil else { continue }
+            
             if property.type != nil {
                 included.append(property)
             } else {
@@ -45,7 +43,7 @@ public struct PublicInitMacro: MemberMacro {
         }
         
         let initializer = try InitializerDeclSyntax("""
-public init(
+init(
     \(raw: included.map { "\($0.bindings)" }.joined(separator: ",\n"))
 )
 """) {

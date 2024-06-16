@@ -4,7 +4,7 @@ import XCTest
 import SwiftBokMacros
 
 private let testMacros: [String: Macro.Type] = [
-    "PublicInit": PublicInitMacro.self,
+    "PublicInit": PublicInitMacro.self
 ]
 
 final class PublicInitMacroTests: XCTestCase {
