@@ -30,7 +30,7 @@ public protocol AccessLevelSyntax {
 
 extension AccessLevelSyntax {
     public var accessLevel: AccessLevelModifier {
-        get { modifiers.lazy.compactMap({ AccessLevelModifier(rawValue: $0.name.text) }).first ?? .internal }
+        get { modifiers.lazy.compactMap { AccessLevelModifier(rawValue: $0.name.text) }.first ?? .internal }
         set {
             let new = DeclModifierSyntax(name: .keyword(newValue.keyword))
             var newModifiers = modifiers.filter { AccessLevelModifier(rawValue: $0.name.text) == nil }
@@ -40,13 +40,12 @@ extension AccessLevelSyntax {
     }
 }
 
-extension StructDeclSyntax: AccessLevelSyntax { }
-extension ClassDeclSyntax: AccessLevelSyntax { }
-extension EnumDeclSyntax: AccessLevelSyntax { }
-extension ActorDeclSyntax: AccessLevelSyntax { }
-
-extension FunctionDeclSyntax: AccessLevelSyntax { }
-extension VariableDeclSyntax: AccessLevelSyntax { }
+extension StructDeclSyntax: AccessLevelSyntax {}
+extension ClassDeclSyntax: AccessLevelSyntax {}
+extension EnumDeclSyntax: AccessLevelSyntax {}
+extension ActorDeclSyntax: AccessLevelSyntax {}
+extension FunctionDeclSyntax: AccessLevelSyntax {}
+extension VariableDeclSyntax: AccessLevelSyntax {}
 
 extension DeclGroupSyntax {
     public var declAccessLevel: AccessLevelModifier {

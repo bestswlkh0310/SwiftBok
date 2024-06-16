@@ -7,3 +7,8 @@ public struct Foo {
 }
 
 let f = Foo(b: false)
+
+@PublicMembers
+public struct Bar {
+    public let a: Int
+}
