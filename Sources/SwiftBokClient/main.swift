@@ -12,3 +12,8 @@ let f = Foo(b: false)
 public struct Bar {
     public let a: Int
 }
+
+@InternalMembers
+public struct Wow {
+    let a: Int
+}

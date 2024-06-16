@@ -6,3 +6,6 @@ public macro InternalInit() = #externalMacro(module: "SwiftBokMacros", type: "In
 
 @attached(memberAttribute)
 public macro PublicMembers() = #externalMacro(module: "SwiftBokMacros", type: "PublicMembersMacro")
+
+@attached(memberAttribute)
+public macro InternalMembers() = #externalMacro(module: "SwiftBokMacros", type: "InternalMembersMacro")

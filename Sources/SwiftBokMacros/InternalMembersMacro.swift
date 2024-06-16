@@ -2,27 +2,27 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftDiagnostics
 
-private enum PublicMembersError: String, Error, DiagnosticMessage {
-    var diagnosticID: MessageID { .init(domain: "PublicInitMacro", id: rawValue) }
+private enum InternalMembersError: String, Error, DiagnosticMessage {
+    var diagnosticID: MessageID { .init(domain: "InternalInitMacro", id: rawValue) }
     var severity: DiagnosticSeverity { .error }
     var message: String {
         switch self {
-        case .notAGroup: return "@PublicMembers can only be applied to structs"
-        case .notPublic: return "@PublicMembers can only be applied to public"
+        case .notAGroup: return "@InternalMembers can only be applied to structs"
+        case .notInternal: return "@InternalMembers can only be applied to internal"
         }
     }
     
     case notAGroup
-    case notPublic
+    case notInternal
 }
 
 private struct InferenceDiagnostic: DiagnosticMessage {
-    let diagnosticID = MessageID(domain: "PublicMembersMacro", id: "inference")
+    let diagnosticID = MessageID(domain: "InternalMembersMacro", id: "inference")
     let severity: DiagnosticSeverity = .error
-    let message: String = "@PublicMembers requires stored properties provide explicit type annotations"
+    let message: String = "@InternalMembers requires stored properties provide explicit type annotations"
 }
 
-public struct PublicMembersMacro: MemberAttributeMacro {
+public struct InternalMembersMacro: MemberAttributeMacro {
     
     public static func expansion(
         of node: AttributeSyntax,
@@ -33,17 +33,15 @@ public struct PublicMembersMacro: MemberAttributeMacro {
         var group: DeclGroupSyntax
         if let classDecl = declaration.as(ClassDeclSyntax.self) {
             group = classDecl
-            guard classDecl.accessLevel == .public else { throw PublicMembersError.notPublic }
         } else if let structDecl = declaration.as(StructDeclSyntax.self) {
             group = structDecl
-            guard structDecl.accessLevel == .public else { throw PublicMembersError.notPublic }
         } else {
-            throw PublicMembersError.notAGroup
+            throw InternalMembersError.notAGroup
         }
         
         for property in group.properties {
-            if property.accessLevel != .public {
-                throw PublicMembersError.notPublic
+            if property.accessLevel != .internal {
+                throw InternalMembersError.notInternal
             }
         }
         return []

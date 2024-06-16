@@ -8,6 +8,7 @@ struct SwiftBokPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         PublicInitMacro.self,
         InternalInitMacro.self,
-        PublicMembersMacro.self
+        PublicMembersMacro.self,
+        InternalMembersMacro.self
     ]
 }
