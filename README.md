@@ -1,11 +1,9 @@
-# PublicInitMacro
-fork: https://github.com/SongSeoYoung/PublicInitMacro
-thank you 🫡
+# SwiftBok
 
 ## Install:
 You can install it via SwiftPackageManager. 
 ```
-https://github.com/bestswlkh0310/PublicInitMacro
+https://github.com/bestswlkh0310/SwiftBok
 ```
 
 ## Usage:
