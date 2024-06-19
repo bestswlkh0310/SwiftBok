@@ -65,7 +65,7 @@ public struct TestStruct {
 public struct TestStruct {
     public let a: String?
     public let b: Float? = nil
-    public c: Int?
+    public var c: Int?
     var d: Int? = nil // Error: @PublicMembers can only be applied to public
 }
 ```
@@ -76,7 +76,7 @@ public struct TestStruct {
 public struct TestStruct {
     let a: String?
     let b: Float? = nil
-    c: Int?
+    var c: Int?
     public var d: Int? = nil // Error: @InternalMembers can only be applied to internal
 }
 ```
