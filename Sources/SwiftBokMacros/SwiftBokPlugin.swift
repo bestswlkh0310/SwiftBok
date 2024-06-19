@@ -9,6 +9,7 @@ struct SwiftBokPlugin: CompilerPlugin {
         PublicInitMacro.self,
         InternalInitMacro.self,
         PublicMembersMacro.self,
-        InternalMembersMacro.self
+        InternalMembersMacro.self,
+        SetterMacro.self
     ]
 }

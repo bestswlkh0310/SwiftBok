@@ -9,3 +9,6 @@ public macro PublicMembers() = #externalMacro(module: "SwiftBokMacros", type: "P
 
 @attached(memberAttribute)
 public macro InternalMembers() = #externalMacro(module: "SwiftBokMacros", type: "InternalMembersMacro")
+
+@attached(member, names: arbitrary)
+public macro Setter() = #externalMacro(module: "SwiftBokMacros", type: "SetterMacro")
