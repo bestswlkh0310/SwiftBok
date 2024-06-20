@@ -7,76 +7,139 @@ https://github.com/bestswlkh0310/SwiftBok
 ```
 
 ## Usage:
-- @PublicInit
+### @Init(isPublic: Bool = true)
+  
+- default is public initializer
+- struct only
 ```swift
-@PublicInit
-public struct TestStruct {
-    private let a: String?
-    public let b: Float? = nil
-    var c: Int?
-    var d: Int? = nil
+@Init()
+public struct Foo {
+    let a: Int = 10
+    var b: Bool
 }
+
+@Init(isPublic: false)
+struct Canvas {
+    let width: Int
+    let height: Int
+}
+
+let f = Foo(b: false)
+let canvas = Canvas(width: 1600, height: 900)
 ```
 expands the following code:
 ```swift
-public struct TestStruct {
-    private let a: String?
-    public let b: Float? = nil
-    var c: Int?
-    var d: Int? = nil
+public struct Foo {
+    let a: Int = 10
+    var b: Bool
+    public init(
+        b: Bool
+    ) {
+        self.b = b
+    }
+}
 
-    public init(a: String?, c: Int? = nil, d: Int? = nil) {
-        self.a = a
-        self.c = c
-        self.d = d
+struct Canvas {
+    let width: Int
+    let height: Int
+    init(
+        width: Int,
+        height: Int
+    ) {
+        self.width = width
+        self.height = height
     }
 }
 ```
+
 ---
-- @InternalInit
+
+### @Members(isPublic: Bool = true)
+
+- default is public members
+- struct/class only
 ```swift
-@InternalInit
-public struct TestStruct {
-    private let a: String?
-    public let b: Float? = nil
-    var c: Int?
-    var d: Int? = nil
+@Members()
+public struct Bar {
+    public let a: Int
+    let b: String // Error: @Members can only be applied to public
 }
+
+@Members(isPublic: false)
+public struct Wow {
+    let a: Int
+    public b: String // Error: @Members can only be applied to internal
+}
+```
+
+---
+
+
+### @Setter(isPublic: Bool = false)
+
+- default is internal setter
+- struct/class only
+```swift
+@Setter()
+class Member {
+    var age: Int = 10
+    var name: String = "10"
+}
+
+@Setter(isPublic: true)
+class View {
+    static let GONE = 1
+    let id = UUID()
+    var x: Int = 80
+    var y: Int = 100
+    
+    func draw() {
+        
+    }
+}
+
+let member = Member()
+    .age(10)
+    .name("")
+
+let view = View()
+    .x(100)
+    .y(30)
 ```
 expands the following code:
 ```swift
-public struct TestStruct {
-    private let a: String?
-    public let b: Float? = nil
-    var c: Int?
-    var d: Int? = nil
+class Member {
+    var age: Int = 10
+    var name: String = "10"
+    func age(_ age: Int) -> Member {
+        self.age = age
+        return self
+    }
 
-    init(a: String?, c: Int? = nil, d: Int? = nil) {
-        self.a = a
-        self.c = c
-        self.d = d
+    func name(_ name: String) -> Member {
+        self.name = name
+        return self
     }
 }
-```
----
-- @PublicMembers
-```swift
-@PublicMembers
-public struct TestStruct {
-    public let a: String?
-    public let b: Float? = nil
-    public var c: Int?
-    var d: Int? = nil // Error: @PublicMembers can only be applied to public
-}
-```
----
-- @InternalMembers
-```swift
-@InternalMembers
-public struct TestStruct {
-    let a: String?
-    let b: Float? = nil
-    var c: Int?
-    public var d: Int? = nil // Error: @InternalMembers can only be applied to internal
+
+class View {
+    static let GONE = 1
+    let id = UUID()
+    var x: Int = 80
+    var y: Int = 100
+    
+    func draw() {
+        
+    }
+
+    public func x(_ x: Int) -> View {
+        self.x = x
+        return self
+    }
+
+    public func y(_ y: Int) -> View {
+        self.y = y
+        return self
+    }
 }
 ```
