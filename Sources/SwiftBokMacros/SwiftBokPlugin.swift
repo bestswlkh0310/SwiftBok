@@ -6,10 +6,8 @@ import SwiftSyntaxMacros
 @main
 struct SwiftBokPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        PublicInitMacro.self,
-        InternalInitMacro.self,
-        PublicMembersMacro.self,
-        InternalMembersMacro.self,
+        InitMacro.self,
+        MembersMacro.self,
         SetterMacro.self
     ]
 }

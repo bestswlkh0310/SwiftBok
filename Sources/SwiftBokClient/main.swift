@@ -1,7 +1,7 @@
 import SwiftBok
 
 // MARK: - Init
-@PublicInit
+@Init()
 public struct Foo {
     let a: Int = 10
     var b: Bool
@@ -10,12 +10,12 @@ public struct Foo {
 let f = Foo(b: false)
 
 // MARK: - Members
-@PublicMembers
+@Members()
 public struct Bar {
     public let a: Int
 }
 
-@InternalMembers
+@Members(isPublic: false)
 public struct Wow {
     let a: Int
 }

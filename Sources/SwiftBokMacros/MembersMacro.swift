@@ -2,18 +2,20 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftDiagnostics
 
-private enum PublicMembersError: String, Error, DiagnosticMessage {
+private enum MembersError: String, Error, DiagnosticMessage {
     var diagnosticID: MessageID { .init(domain: "PublicInitMacro", id: rawValue) }
     var severity: DiagnosticSeverity { .error }
     var message: String {
         switch self {
-        case .notAGroup: return "@PublicMembers can only be applied to structs"
-        case .notPublic: return "@PublicMembers can only be applied to public"
+        case .notAGroup: "@Members can only be applied to class/struct"
+        case .notPublic: "@Members can only be applied to public"
+        case .invalidArgument: "@Members has some argument"
         }
     }
     
     case notAGroup
     case notPublic
+    case invalidArgument
 }
 
 private struct InferenceDiagnostic: DiagnosticMessage {
@@ -22,7 +24,7 @@ private struct InferenceDiagnostic: DiagnosticMessage {
     let message: String = "@PublicMembers requires stored properties provide explicit type annotations"
 }
 
-public struct PublicMembersMacro: MemberAttributeMacro {
+public struct MembersMacro: MemberAttributeMacro {
     
     public static func expansion(
         of node: AttributeSyntax,
@@ -30,20 +32,32 @@ public struct PublicMembersMacro: MemberAttributeMacro {
         providingAttributesFor member: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [AttributeSyntax] {
+        guard case .argumentList(let argument) = node.arguments,
+              let boolExpr = argument.first?.expression.as(BooleanLiteralExprSyntax.self) ?? .some(true),
+              let isPublic = Bool("\(boolExpr)") else {
+            throw MembersError.invalidArgument
+        }
+        
         var group: DeclGroupSyntax
         if let classDecl = declaration.as(ClassDeclSyntax.self) {
             group = classDecl
-            guard classDecl.accessLevel == .public else { throw PublicMembersError.notPublic }
+            if isPublic {
+                guard classDecl.accessLevel == .public else { throw MembersError.notPublic }
+            }
         } else if let structDecl = declaration.as(StructDeclSyntax.self) {
             group = structDecl
-            guard structDecl.accessLevel == .public else { throw PublicMembersError.notPublic }
+            if isPublic {
+                guard structDecl.accessLevel == .public else { throw MembersError.notPublic }
+            }
         } else {
-            throw PublicMembersError.notAGroup
+            throw MembersError.notAGroup
         }
         
+        let memberAccessLevel: AccessLevelModifier = isPublic ? .public : .internal
+        
         for property in group.properties {
-            if property.accessLevel != .public {
-                throw PublicMembersError.notPublic
+            if property.accessLevel != memberAccessLevel {
+                throw MembersError.notPublic
             }
         }
         return []

@@ -2,35 +2,45 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftDiagnostics
 
-private enum PublicInitError: String, Error, DiagnosticMessage {
+private enum InitError: String, Error, DiagnosticMessage {
     var diagnosticID: MessageID { .init(domain: "PublicInitMacro", id: rawValue) }
     var severity: DiagnosticSeverity { .error }
     var message: String {
         switch self {
-        case .notAStruct: return "@PublicInit can only be applied to structs"
-        case .notPublic: return "@PublicInit can only be applied to public structs"
+        case .notAStruct: "@Init can only be applied to struct"
+        case .notPublic: "@Init can only be applied to public struct"
+        case .invalidArgument: "@Init has some argument"
         }
     }
     
     case notAStruct
     case notPublic
+    case invalidArgument
 }
 
 private struct InferenceDiagnostic: DiagnosticMessage {
     let diagnosticID = MessageID(domain: "PublicInitMacro", id: "inference")
     let severity: DiagnosticSeverity = .error
-    let message: String = "@PublicInit requires stored properties provide explicit type annotations"
+    let message: String = "@Init requires stored properties provide explicit type annotations"
 }
 
-public struct PublicInitMacro: MemberMacro {
+public struct InitMacro: MemberMacro {
     
     public static func expansion<Declaration: DeclGroupSyntax, Context: MacroExpansionContext>(
         of node: AttributeSyntax,
         providingMembersOf declaration: Declaration,
         in context: Context
     ) throws -> [DeclSyntax] {
-        guard let structDecl = declaration.as(StructDeclSyntax.self) else { throw PublicInitError.notAStruct }
-        guard structDecl.accessLevel == .public else { throw PublicInitError.notPublic }
+        guard case .argumentList(let arguments) = node.arguments,
+              let boolExpr = arguments.first?.expression.as(BooleanLiteralExprSyntax.self) ?? .some(true),
+              let isPublic = Bool("\(boolExpr)") else {
+            throw InitError.invalidArgument
+        }
+        
+        guard let structDecl = declaration.as(StructDeclSyntax.self) else { throw InitError.notAStruct }
+        if isPublic {
+            guard structDecl.accessLevel == .public else { throw InitError.notPublic }
+        }
         
         var included: [VariableDeclSyntax] = []
         
@@ -45,7 +55,7 @@ public struct PublicInitMacro: MemberMacro {
         }
         
         let initializer = try InitializerDeclSyntax("""
-public init(
+\(raw: isPublic ? "public " : "")init(
     \(raw: included.map { "\($0.bindings)" }.joined(separator: ",\n"))
 )
 """) {
