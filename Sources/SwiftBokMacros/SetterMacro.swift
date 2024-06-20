@@ -7,11 +7,13 @@ private enum SetterError: String, Error, DiagnosticMessage {
     var severity: DiagnosticSeverity { .error }
     var message: String {
         switch self {
-        case .notAClass: return "@InternalInit can only be applied to structs"
+        case .notAClass: "@Setter can only be applied to class"
+        case .invalidArgument: "@Setter has some argument"
         }
     }
     
     case notAClass
+    case invalidArgument
 }
 
 public struct SetterMacro: MemberMacro {
@@ -21,14 +23,20 @@ public struct SetterMacro: MemberMacro {
         providingMembersOf declaration: some DeclGroupSyntax,
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
-        
+        guard case .argumentList(let arguments) = node.arguments,
+              let boolExpr = arguments.first?.expression.as(BooleanLiteralExprSyntax.self) ?? .some(false),
+              let isPublic = Bool("\(boolExpr)") else {
+            throw SetterError.invalidArgument
+        }
         guard let classDecl = declaration.as(ClassDeclSyntax.self) else {
             throw SetterError.notAClass
         }
-        return classDecl.properties
+        
+        return classDecl.storedProperties
+            .filter { !$0.isStatic && ($0.bindingSpecifier.text == "var") }
             .map {
                     """
-    func \($0.identifier)(_ \($0.identifier)\($0.type!)) -> \(classDecl.name) {
+    \(raw: isPublic ? "public " : "")func \($0.identifier)(_ \($0.identifier)\($0.type!)) -> \(classDecl.name) {
         self.\($0.identifier) = \($0.identifier)
         return self
     }

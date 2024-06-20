@@ -1,4 +1,5 @@
 import SwiftBok
+import Foundation
 
 // MARK: - Init
 @Init()
@@ -21,13 +22,28 @@ public struct Wow {
 }
 
 // MARK: - Setter
-@Setter
+@Setter()
 class Member {
     var age: Int = 10
     var name: String = "10"
-    
 }
+
+@Setter(isPublic: true)
+class View {
+    static let GONE = 1
+    let id = UUID()
+    var x: Int = 80
+    var y: Int = 100
+    
+    func draw() {
+        
+    }
+}
+
 let member = Member()
     .age(10)
     .name("")
-print(member)
+
+let view = View()
+    .x(100)
+    .y(30)
