@@ -9,17 +9,19 @@ private enum MembersError: String, Error, DiagnosticMessage {
         switch self {
         case .notAGroup: "@Members can only be applied to class/struct"
         case .notPublic: "@Members can only be applied to public"
+        case .notInternal: "@Members can only be applied to internal"
         case .invalidArgument: "@Members has some argument"
         }
     }
     
     case notAGroup
     case notPublic
+    case notInternal
     case invalidArgument
 }
 
 private struct InferenceDiagnostic: DiagnosticMessage {
-    let diagnosticID = MessageID(domain: "PublicMembersMacro", id: "inference")
+    let diagnosticID = MessageID(domain: "MembersMacro", id: "inference")
     let severity: DiagnosticSeverity = .error
     let message: String = "@PublicMembers requires stored properties provide explicit type annotations"
 }
@@ -56,9 +58,10 @@ public struct MembersMacro: MemberAttributeMacro {
         let memberAccessLevel: AccessLevelModifier = isPublic ? .public : .internal
         
         for property in group.properties {
-            if property.accessLevel != memberAccessLevel {
-                throw MembersError.notPublic
+            if property.accessLevel == memberAccessLevel {
+                continue
             }
+            throw isPublic ? MembersError.notPublic : MembersError.notInternal
         }
         return []
     }

@@ -19,7 +19,7 @@ private enum InitError: String, Error, DiagnosticMessage {
 }
 
 private struct InferenceDiagnostic: DiagnosticMessage {
-    let diagnosticID = MessageID(domain: "PublicInitMacro", id: "inference")
+    let diagnosticID = MessageID(domain: "InitMacro", id: "inference")
     let severity: DiagnosticSeverity = .error
     let message: String = "@Init requires stored properties provide explicit type annotations"
 }

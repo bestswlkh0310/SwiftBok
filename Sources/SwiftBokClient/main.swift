@@ -10,6 +10,14 @@ public struct Foo {
 
 let f = Foo(b: false)
 
+@Init(isPublic: false)
+struct Canvas {
+    let width: Int
+    let height: Int
+}
+
+let canvas = Canvas(width: 1600, height: 900)
+
 // MARK: - Members
 @Members()
 public struct Bar {
@@ -29,7 +37,7 @@ class Member {
 }
 
 @Setter(isPublic: true)
-class View {
+struct View {
     static let GONE = 1
     let id = UUID()
     var x: Int = 80
