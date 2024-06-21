@@ -6,3 +6,6 @@ public macro Members(isPublic: Bool = true) = #externalMacro(module: "SwiftBokMa
 
 @attached(member, names: arbitrary)
 public macro Setter(isPublic: Bool = false) = #externalMacro(module: "SwiftBokMacros", type: "SetterMacro")
+
+@attached(member, names: named(toString))
+public macro ToString() = #externalMacro(module: "SwiftBokMacros", type: "ToStringMacro")
