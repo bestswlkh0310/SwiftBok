@@ -6,7 +6,7 @@ import CompilerPluginSupport
 
 let package = Package(
     name: "SwiftBok",
-    platforms: [.macOS(.v12), .iOS(.v15), .tvOS(.v13), .watchOS(.v6), .macCatalyst(.v13)],
+    platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6), .macCatalyst(.v13)],
     products: [
         .library(
             name: "SwiftBok",
@@ -17,15 +17,12 @@ let package = Package(
             targets: ["SwiftBokClient"]
         ),
     ],
-    dependencies: [
-        .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0"),
-    ],
+    dependencies: [],
     targets: [
         .macro(
             name: "SwiftBokMacros",
             dependencies: [
-                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-                .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
+                .target(name: "SwiftSyntaxWrapper")
             ]
         ),
         .target(name: "SwiftBok", dependencies: ["SwiftBokMacros"]),
@@ -34,8 +31,9 @@ let package = Package(
             name: "SwiftBokTests",
             dependencies: [
                 "SwiftBokMacros",
-                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+                .target(name: "SwiftSyntaxWrapper")
             ]
         ),
+        .binaryTarget(name: "SwiftSyntaxWrapper", path: "XCFramework/SwiftSyntaxWrapper.xcframework"),
     ]
 )

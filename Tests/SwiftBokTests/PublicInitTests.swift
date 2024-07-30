@@ -4,14 +4,14 @@ import XCTest
 import SwiftBokMacros
 
 private let testMacros: [String: Macro.Type] = [
-    "PublicInit": PublicInitMacro.self
+    "Init": InitMacro.self
 ]
 
 final class PublicInitMacroTests: XCTestCase {
     func testPublicInit_HappyPath() {
         assertMacroExpansion(
             """
-            @PublicInit
+            @Init()
             public struct Foo {
                 var a: String
                 private var b: Int = 42
@@ -41,7 +41,7 @@ final class PublicInitMacroTests: XCTestCase {
             }
             """,
             diagnostics: [
-                .init(message: "@PublicInit requires stored properties provide explicit type annotations", line: 5, column: 5)
+                .init(message: "@Init requires stored properties provide explicit type annotations", line: 5, column: 5)
             ],
             macros: testMacros
         )
@@ -49,7 +49,7 @@ final class PublicInitMacroTests: XCTestCase {
     func testPublicInit_HappyPath_Empty() {
         assertMacroExpansion(
             """
-            @PublicInit
+            @Init()
             public struct Foo {
             }
             """,
@@ -69,7 +69,7 @@ final class PublicInitMacroTests: XCTestCase {
     func testPublicInit_HappyPath_IgnoreStaticProperties() {
         assertMacroExpansion(
             """
-            @PublicInit
+            @Init()
             public struct Foo {
                 static var a: Int = 0
                 let b: Double
@@ -94,7 +94,7 @@ final class PublicInitMacroTests: XCTestCase {
     func testPublicInit_Failure_AccessPrivate() {
         assertMacroExpansion(
             """
-            @PublicInit
+            @Init()
             private struct Foo {
                 var a: String
             }
@@ -106,7 +106,7 @@ final class PublicInitMacroTests: XCTestCase {
             }
             """,
             diagnostics: [
-                .init(message: "@PublicInit can only be applied to public structs", line: 1, column: 1)
+                .init(message: "@Init can only be applied to public struct", line: 1, column: 1)
             ],
             macros: testMacros
         )
@@ -114,7 +114,7 @@ final class PublicInitMacroTests: XCTestCase {
     func testPublicInit_Failure_AccessImplicitInternal() {
         assertMacroExpansion(
             """
-            @PublicInit
+            @Init()
             struct Foo {
                 var a: String
             }
@@ -126,7 +126,7 @@ final class PublicInitMacroTests: XCTestCase {
             }
             """,
             diagnostics: [
-                .init(message: "@PublicInit can only be applied to public structs", line: 1, column: 1)
+                .init(message: "@Init can only be applied to public struct", line: 1, column: 1)
             ],
             macros: testMacros
         )
@@ -134,7 +134,7 @@ final class PublicInitMacroTests: XCTestCase {
     func testPublicInit_Failure_AccessExplicitInternal() {
         assertMacroExpansion(
             """
-            @PublicInit
+            @Init()
             internal struct Foo {
                 var a: String
             }
@@ -146,7 +146,7 @@ final class PublicInitMacroTests: XCTestCase {
             }
             """,
             diagnostics: [
-                .init(message: "@PublicInit can only be applied to public structs", line: 1, column: 1)
+                .init(message: "@Init can only be applied to public struct", line: 1, column: 1)
             ],
             macros: testMacros
         )
@@ -154,7 +154,7 @@ final class PublicInitMacroTests: XCTestCase {
     func testPublicInit_Failure_Class() {
         assertMacroExpansion(
             """
-            @PublicInit
+            @Init()
             public class Foo {
                 var a: String
             }
@@ -166,7 +166,7 @@ final class PublicInitMacroTests: XCTestCase {
             }
             """,
             diagnostics: [
-                .init(message: "@PublicInit can only be applied to structs", line: 1, column: 1)
+                .init(message: "@Init can only be applied to struct", line: 1, column: 1)
             ],
             macros: testMacros
         )
@@ -174,7 +174,7 @@ final class PublicInitMacroTests: XCTestCase {
     func testPublicInit_Failure_Enum() {
         assertMacroExpansion(
             """
-            @PublicInit
+            @Init()
             public enum Foo {
                 case a
             }
@@ -186,7 +186,7 @@ final class PublicInitMacroTests: XCTestCase {
             }
             """,
             diagnostics: [
-                .init(message: "@PublicInit can only be applied to structs", line: 1, column: 1)
+                .init(message: "@Init can only be applied to struct", line: 1, column: 1)
             ],
             macros: testMacros
         )
@@ -194,7 +194,7 @@ final class PublicInitMacroTests: XCTestCase {
     func testPublicInit_Failure_Actor() {
         assertMacroExpansion(
             """
-            @PublicInit
+            @Init()
             public actor Foo {
                 var a: String
             }
@@ -206,7 +206,7 @@ final class PublicInitMacroTests: XCTestCase {
             }
             """,
             diagnostics: [
-                .init(message: "@PublicInit can only be applied to structs", line: 1, column: 1)
+                .init(message: "@Init can only be applied to struct", line: 1, column: 1)
             ],
             macros: testMacros
         )

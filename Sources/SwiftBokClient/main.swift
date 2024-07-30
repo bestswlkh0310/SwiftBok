@@ -37,7 +37,7 @@ class Member {
 }
 
 @Setter(isPublic: true)
-struct View {
+class View {
     static let GONE = 1
     let id = UUID()
     var x: Int = 80

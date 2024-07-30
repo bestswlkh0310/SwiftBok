@@ -4,14 +4,14 @@ import XCTest
 import SwiftBokMacros
 
 private let testMacros: [String: Macro.Type] = [
-    "InternalInit": InternalInitMacro.self
+    "Init": InitMacro.self
 ]
 
 final class InternalInitMacroTests: XCTestCase {
     func testInternalInit_HappyPath() {
         assertMacroExpansion(
             """
-            @InternalInit
+            @Init(isPublic: false)
             struct Foo {
                 var a: String
                 private var b: Int = 42
@@ -41,7 +41,7 @@ final class InternalInitMacroTests: XCTestCase {
             }
             """,
             diagnostics: [
-                .init(message: "@InternalInit requires stored properties provide explicit type annotations", line: 5, column: 5)
+                .init(message: "@Init requires stored properties provide explicit type annotations", line: 5, column: 5)
             ],
             macros: testMacros
         )
@@ -49,7 +49,7 @@ final class InternalInitMacroTests: XCTestCase {
     func testInternalInit_HappyPath_Empty() {
         assertMacroExpansion(
             """
-            @InternalInit
+            @Init(isPublic: false)
             struct Foo {
             }
             """,
@@ -69,7 +69,7 @@ final class InternalInitMacroTests: XCTestCase {
     func testInternalInit_HappyPath_IgnoreStaticProperties() {
         assertMacroExpansion(
             """
-            @InternalInit
+            @Init(isPublic: false)
             struct Foo {
                 static var a: Int = 0
                 let b: Double
@@ -94,7 +94,7 @@ final class InternalInitMacroTests: XCTestCase {
     func testInternalInit_Failure_AccessPrivate() {
         assertMacroExpansion(
             """
-            @InternalInit
+            @Init(isPublic: false)
             private struct Foo {
                 var a: String
             }
@@ -117,7 +117,7 @@ final class InternalInitMacroTests: XCTestCase {
     func testInternalInit_Failure_AccessImplicitInternal() {
         assertMacroExpansion(
             """
-            @InternalInit
+            @Init(isPublic: false)
             struct Foo {
                 var a: String
             }
@@ -140,7 +140,7 @@ final class InternalInitMacroTests: XCTestCase {
     func testInternalInit_Failure_AccessExplicitInternal() {
         assertMacroExpansion(
             """
-            @InternalInit
+            @Init(isPublic: false)
             internal struct Foo {
                 var a: String
             }
@@ -163,7 +163,7 @@ final class InternalInitMacroTests: XCTestCase {
     func testInternalInit_Failure_Class() {
         assertMacroExpansion(
             """
-            @InternalInit
+            @Init(isPublic: false)
             class Foo {
                 var a: String
             }
@@ -175,7 +175,7 @@ final class InternalInitMacroTests: XCTestCase {
             }
             """,
             diagnostics: [
-                .init(message: "@InternalInit can only be applied to structs", line: 1, column: 1)
+                .init(message: "@Init can only be applied to struct", line: 1, column: 1)
             ],
             macros: testMacros
         )
@@ -183,7 +183,7 @@ final class InternalInitMacroTests: XCTestCase {
     func testInternalInit_Failure_Enum() {
         assertMacroExpansion(
             """
-            @InternalInit
+            @Init(isPublic: false)
             enum Foo {
                 case a
             }
@@ -195,7 +195,7 @@ final class InternalInitMacroTests: XCTestCase {
             }
             """,
             diagnostics: [
-                .init(message: "@InternalInit can only be applied to structs", line: 1, column: 1)
+                .init(message: "@Init can only be applied to struct", line: 1, column: 1)
             ],
             macros: testMacros
         )
@@ -203,7 +203,7 @@ final class InternalInitMacroTests: XCTestCase {
     func testInternalInit_Failure_Actor() {
         assertMacroExpansion(
             """
-            @InternalInit
+            @Init(isPublic: false)
             actor Foo {
                 var a: String
             }
@@ -215,7 +215,7 @@ final class InternalInitMacroTests: XCTestCase {
             }
             """,
             diagnostics: [
-                .init(message: "@InternalInit can only be applied to structs", line: 1, column: 1)
+                .init(message: "@Init can only be applied to struct", line: 1, column: 1)
             ],
             macros: testMacros
         )
